@@ -10,8 +10,8 @@ def show(body:str) -> None: # Update the return type at the end of the function
         elif not in_tag:
             print(char, end="")
 
-def load(url: str) -> None:
-    body: str = URL.request(url)
+def load(url: URL) -> None:
+    body: str = url.request()
     show(body)
 
 if __name__ == "__main__":
