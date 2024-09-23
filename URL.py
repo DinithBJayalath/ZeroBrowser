@@ -33,8 +33,10 @@ class URL:
                 context = ssl.create_default_context()
                 s = context.wrap_socket(s, server_hostname=self.host)
             # The next 3 lines of the code is the request, "\r\n" is to send the extra line to end the request in http
-            request: str = "GET {} HTTP/1.0\r\n".format(self.path)
-            request += "Host: {}\r\n".format(self.host)
+            request: str = f"GET {self.path} HTTP/1.1\r\n"
+            request += f"Host: {self.host}\r\n"
+            request += f"Connection: close\r\n"
+            request += f"User-Agent: ZeroBrowser/1.0\r\n"
             request += "\r\n"
             s.send(request.encode("utf-8"))
             # makefile method waits for the whole response to come and make a file like structure
