@@ -19,6 +19,11 @@ class URL:
         self.path = "/" + url
 
     def request(self) -> str:
+        """This Function is to send the request to the server and get the response  
+        Takes no arguments, works on URL  objects  
+        
+        The function handles upto 10 redirects  
+        Uses 'HTTP/1.1'"""
         # Loop until a valid url is present, but stop if there are too many redirects
         MAX_REDIRECTS: int = 10
         for _ in range(MAX_REDIRECTS):
