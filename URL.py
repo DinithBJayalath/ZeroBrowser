@@ -2,6 +2,8 @@ import socket
 import ssl
 
 class URL:
+    """This class takes a string url as an argument and parse it to convert in to parts of the url  
+    and there are methods to send requests with that url and get the response"""
 
     def __init__(self, url:str) -> None:
         self.scheme, url = url.split("://", 1) # Multiple assignment
@@ -19,11 +21,12 @@ class URL:
         self.path = "/" + url
 
     def request(self) -> str:
-        """This Function is to send the request to the server and get the response  
-        Takes no arguments, works on URL  objects  
+        """This method is to send the request to the server and get the response  
+        Takes no arguments, works on URL  objects and returns the body as a string  
         
-        The function handles upto 10 redirects  
-        Uses 'HTTP/1.1'"""
+        The method handles upto 10 redirects  
+        Uses 'HTTP/1.1'  
+        This method supports both 'http' and 'https' url"""
         # Loop until a valid url is present, but stop if there are too many redirects
         MAX_REDIRECTS: int = 10
         for _ in range(MAX_REDIRECTS):

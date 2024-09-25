@@ -8,6 +8,8 @@ VSTEP: int = 18
 SCROLL_STEP: int = 50
 
 class Browser:
+    """This class is used to create the GUI of the browser  
+    There are methods to to load the web page from the url and draw to the screen and etc."""
 
     def __init__(self) -> None:
         self.window = tkinter.Tk()
@@ -21,7 +23,7 @@ class Browser:
         self.canvas.pack()
 
     def scroll_down(self, e) -> None:
-        """This is a event listener function to make the window scroll  
+        """This is a event listener method to make the window scroll  
 
         The takes the event as an argument and update the value of the instance variable scroll  
         and redraw the body of the page"""
@@ -29,75 +31,75 @@ class Browser:
         self.draw()
 
     def load(self, url: URL) -> None:
+        """This method loads the website from the given url and  
+        uses the 'lex' method to parse the HTML and  
+        draws it to the screen"""
         body: str = url.request()
-        text = Browser.lex(body)
-        self.display_list = Browser.layout(text)
+        text = lex(body)
+        self.display_list = layout(text)
         self.draw()
 
     def draw(self) -> None:
+        """This method handles drawing to the screen"""
         self.canvas.delete("all")
         for x, y, char in self.display_list:
             self.canvas.create_text(x, y-self.scroll, text=char)
 
-    @staticmethod
-    def lex(self, body:str) -> str:
-        """This function receives the webpage body as an argument and parses it.
+def lex(body:str) -> str:
+    """This function receives the webpage body as an argument and parses it.
 
-        It looks for HTML tags and remove them and looks for special characters and  
-        converts them to the respective expected characters"""
-        in_tag: bool = False
-        Special_characters: dict[str, str] = {
-            "lt": "<",
-            "gt": ">",
-            "amp": "&",
-            "quot": '"',
-            "apos": "'"
-        }
-        i = 0
-        text: str = ""
-        while i < len(body): # Loop over character by character
-            if body[i] == "<":
-                in_tag = True
-                i += 1
-            elif body[i] == ">":
-                in_tag = False
-                i += 1
-            elif not in_tag:
-                if body[i] == "&":
-                    semicolon_pos = body.find(";", i)
-                    # If ";" doesn't exist in the body then the find method will return "-1"
-                    if semicolon_pos != -1:
-                        entry = body[i+1:semicolon_pos]
-                        if entry in Special_characters:
-                            text += Special_characters.get(entry)
-                            # When a special character is added to the text,
-                            # the position of the current letter needs to be updated to be the position after the ";"
-                            i = semicolon_pos + 1
-                        else:
-                            text += body[i]
-                            i += 1
-                    else:
-                        text += body[i]
-                        i += 1
-                else:
-                    text += body[i]
-                    i += 1
-            else:
-                i += 1
-        return text
-    
-    @staticmethod
-    def layout(text: str) -> list[tuple[int, int, str]]:
-        display_list = []
-        cursor_x, cursor_y = HSTEP, VSTEP
-        for char in text:
-            display_list.append((cursor_x, cursor_y, char))
-            cursor_x += HSTEP
-            # The position  of the character needs to be updated to be in the next row if the character is going of the screen from the side
-            if cursor_x >= WIDTH - HSTEP:
-                cursor_x = HSTEP
-                cursor_y += VSTEP
-        return display_list
+    It looks for HTML tags and remove them and looks for special characters and  
+    converts them to the respective expected characters"""
+    in_tag: bool = False
+    Special_characters: dict[str, str] = {
+        "lt": "<",
+        "gt": ">",
+        "amp": "&",
+        "quot": '"',
+        "apos": "'"
+    }
+    i = 0
+    text: str = ""
+    while i < len(body): # Loop over character by character
+        if body[i] == "<":
+            in_tag = True
+            i += 1
+        elif body[i] == ">":
+            in_tag = False
+            i += 1
+        elif not in_tag:
+            if body[i] == "&":
+                semicolon_pos = body.find(";", i)
+                # If ";" doesn't exist in the body then the find method will return "-1"
+                if semicolon_pos != -1:
+                    entry = body[i+1:semicolon_pos]
+                    if entry in Special_characters:
+                        text += Special_characters.get(entry)
+                        # When a special character is added to the text,
+                        # the position of the current letter needs to be updated to be the position after the ";"
+                        i = semicolon_pos + 1
+                        continue
+            # Either if the character is not '&'
+            # Or if there is no ';'
+            # Or if the entry is not one of the special characters
+            # This part of the code will run 
+            text += body[i]
+            i += 1
+        else:
+            i += 1
+    return text
+
+def layout(text: str) -> list[tuple[int, int, str]]:
+    display_list = []
+    cursor_x, cursor_y = HSTEP, VSTEP
+    for char in text:
+        display_list.append((cursor_x, cursor_y, char))
+        cursor_x += HSTEP
+        # The position  of the character needs to be updated to be in the next row if the character is going of the screen from the side
+        if cursor_x >= WIDTH - HSTEP:
+            cursor_x = HSTEP
+            cursor_y += VSTEP
+    return display_list
 
 if __name__ == "__main__":
     import sys
