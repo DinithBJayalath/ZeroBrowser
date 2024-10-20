@@ -1,5 +1,5 @@
 from URL import URL
-import tkinter
+import tkinter, tkinter.font
 
 WIDTH: int = 800
 HEIGHT: int = 600
@@ -43,6 +43,10 @@ class Browser:
         """This method handles drawing to the screen"""
         self.canvas.delete("all")
         for x, y, char in self.display_list:
+            # The following 2 if statements make sure that 
+            # only the characters that are visible on the screen are drawn
+            if y > self.scroll + HEIGHT:continue
+            if y + VSTEP < self.scroll:continue
             self.canvas.create_text(x, y-self.scroll, text=char)
 
 def lex(body:str) -> str:
@@ -90,15 +94,17 @@ def lex(body:str) -> str:
     return text
 
 def layout(text: str) -> list[tuple[int, int, str]]:
+    font: tkinter.font.Font = tkinter.font.Font()
     display_list = []
     cursor_x, cursor_y = HSTEP, VSTEP
-    for char in text:
-        display_list.append((cursor_x, cursor_y, char))
-        cursor_x += HSTEP
+    for word  in text.split():
+        word_width = font.measure(word)
         # The position  of the character needs to be updated to be in the next row if the character is going of the screen from the side
-        if cursor_x >= WIDTH - HSTEP:
+        if cursor_x + word_width >= WIDTH - HSTEP:
             cursor_x = HSTEP
-            cursor_y += VSTEP
+            cursor_y += font.metrics("linespace")*1.25
+        display_list.append((cursor_x, cursor_y, word))
+        cursor_x += word_width +font.measure(" ")
     return display_list
 
 if __name__ == "__main__":
